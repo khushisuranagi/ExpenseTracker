@@ -84,6 +84,7 @@ public class DatabaseHelper {
         String sql = "INSERT OR IGNORE INTO users(username, password) VALUES(?, ?)";
 
         String[][] defaultUsers = {
+                {"admin", "1234"},
                 {"john", "abraham"},
                 {"sarah", "sarah123"},
                 {"mike", "mike"}
