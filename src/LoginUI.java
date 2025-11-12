@@ -37,7 +37,7 @@ public class LoginUI {
             if (isValid) {
                 message.setText("Login successful!");
                 ExpenseTrackerUI expenseUI = new ExpenseTrackerUI();
-                stage.setScene(new Scene(expenseUI.getView(), 600, 400));
+                stage.setScene(new Scene(expenseUI.getView(), 700, 500));
             } else {
                 message.setText("Invalid login! Try again.");
             }

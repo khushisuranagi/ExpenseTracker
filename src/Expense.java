@@ -6,7 +6,7 @@ public class Expense {
     private DoubleProperty amount;
     private StringProperty date;
 
-    public Expense(String category, String description,double amount, String date) {
+    public Expense(String category, String description, double amount, String date) {
         this.category = new SimpleStringProperty(category);
         this.description = new SimpleStringProperty(description);
         this.amount = new SimpleDoubleProperty(amount);
@@ -14,12 +14,12 @@ public class Expense {
     }
 
     // TableView property getters
-    public StringProperty categoryProperty(){ return category; }
+    public StringProperty categoryProperty() { return category; }
     public StringProperty descriptionProperty() { return description; }
     public DoubleProperty amountProperty() { return amount; }
     public StringProperty dateProperty() { return date; }
 
-    // Regular getters for summaries
+    // Regular getters
     public String getCategory() { return category.get(); }
     public String getDescription() { return description.get(); }
     public double getAmount() { return amount.get(); }
