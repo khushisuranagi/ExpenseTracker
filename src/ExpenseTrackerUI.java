@@ -20,7 +20,7 @@ public class ExpenseTrackerUI {
         layout = new VBox(10);
         layout.setPadding(new Insets(15));
 
-        Label title = new Label("💰 Expense Tracker");
+        Label title = new Label("Expense Tracker");
 
         // Category dropdown
         ComboBox<String> categoryDropdown = new ComboBox<>();

@@ -63,4 +63,48 @@ public class DatabaseHelper {
             System.out.println("❌ Error viewing expenses: " + e.getMessage());
         }
     }
+
+    // create users table if not exists
+    public static void createUsersTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS users (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "username TEXT," +
+                "password TEXT)";
+        try (Connection conn = connect();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Users table ready");
+        } catch (SQLException e) {
+            System.out.println("Error creating users table: " + e.getMessage());
+        }
+    }
+
+    // add one default user for testing
+    public static void addDefaultUser() {
+        String sql = "INSERT OR IGNORE INTO users(username, password) VALUES('admin', '1234')";
+        try (Connection conn = connect();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("Default user added");
+        } catch (SQLException e) {
+            System.out.println("Error adding default user: " + e.getMessage());
+        }
+    }
+
+    // check if login details are correct
+    public static boolean checkLogin(String username, String password) {
+        String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            pstmt.setString(2, password);
+            ResultSet rs = pstmt.executeQuery();
+            return rs.next(); // true if found
+        } catch (SQLException e) {
+            System.out.println("Error checking login: " + e.getMessage());
+            return false;
+        }
+    }
+
+
 }
