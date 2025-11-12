@@ -20,17 +20,13 @@ public class ExpenseTrackerUI {
         layout = new VBox(10);
         layout.setPadding(new Insets(15));
 
-        Label title = new Label("Expense Tracker");
-        title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        Label title = new Label("💰 Expense Tracker");
 
         // Category dropdown
         ComboBox<String> categoryDropdown = new ComboBox<>();
         categoryDropdown.setPromptText("Select Category");
         categoryDropdown.getItems().addAll("Food", "Travel", "Shopping", "Entertainment", "Other");
 
-        //description input
-        TextField descriptionField = new TextField();
-        descriptionField.setPromptText("Description");
         // Amount input
         TextField amountField = new TextField();
         amountField.setPromptText("Amount");
@@ -44,22 +40,15 @@ public class ExpenseTrackerUI {
         tableView.setItems(expenses);
 
         TableColumn<Expense, String> categoryCol = new TableColumn<>("Category");
-        categoryCol.setCellValueFactory(data -> data.getValue().categoryProperty());
-        categoryCol.setPrefWidth(100);
-
-        TableColumn<Expense, String> descriptionCol = new TableColumn<>("Description");
-        descriptionCol.setCellValueFactory(data -> data.getValue().descriptionProperty());
-        descriptionCol.setPrefWidth(200);
+        categoryCol.setCellValueFactory(data -> data.getValue().descriptionProperty());
 
         TableColumn<Expense, Double> amountCol = new TableColumn<>("Amount (₹)");
         amountCol.setCellValueFactory(data -> data.getValue().amountProperty().asObject());
-        amountCol.setPrefWidth(100);
 
         TableColumn<Expense, String> dateCol = new TableColumn<>("Date");
         dateCol.setCellValueFactory(data -> data.getValue().dateProperty());
-        dateCol.setPrefWidth(100);
 
-        tableView.getColumns().addAll(categoryCol, descriptionCol,amountCol, dateCol);
+        tableView.getColumns().addAll(categoryCol, amountCol, dateCol);
 
         // Initialize summary ListView
         summaryView = new ListView<>();
@@ -76,13 +65,6 @@ public class ExpenseTrackerUI {
                 return;
             }
 
-            String description = descriptionField.getText();
-            if (description == null || description.trim().isEmpty())
-            {
-                Alert alert = new Alert(Alert.AlertType.WARNING, "Please enter a description!");
-                alert.showAndWait();
-                return;
-            }
             double amount;
             try {
                 amount = Double.parseDouble(amountField.getText());
@@ -95,22 +77,21 @@ public class ExpenseTrackerUI {
             String date = LocalDate.now().toString();
 
             // Save to database
-            DatabaseHelper.addExpense(1, amount, description, category, date);
+            DatabaseHelper.addExpense(1, amount, category, date);
 
             // Add to TableView
-            expenses.add(new Expense(category, description, amount, date));
+            expenses.add(new Expense(category, amount, date));
 
             // Update summary
             updateSummary();
 
             // Clear inputs
             categoryDropdown.setValue(null);
-            descriptionField.clear();
             amountField.clear();
         });
 
         // Add all components to layout
-        layout.getChildren().addAll(title, categoryDropdown, descriptionField , amountField, addButton, tableView, summaryView);
+        layout.getChildren().addAll(title, categoryDropdown, amountField, addButton, tableView, summaryView);
     }
 
     public VBox getView() {
@@ -123,7 +104,7 @@ public class ExpenseTrackerUI {
 
         Map<String, Double> totals = new HashMap<>();
         for (Expense exp : expenses) {
-            totals.put(exp.getCategory(), totals.getOrDefault(exp.getCategory(), 0.0) + exp.getAmount());
+            totals.put(exp.getDescription(), totals.getOrDefault(exp.getDescription(), 0.0) + exp.getAmount());
         }
 
         double overallTotal = 0;

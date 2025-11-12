@@ -27,13 +27,13 @@ public class DatabaseHelper {
     }
 
     // add expense
-    public static void addExpense(int categoryId, double amount, String description, String category, String date) {
+    public static void addExpense(int categoryId, double amount, String description, String date) {
         String sql = "INSERT INTO expenses(category_id, amount, description, date) VALUES(?, ?, ?, ?)";
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, categoryId);
             pstmt.setDouble(2, amount);
-            pstmt.setString(3, description + " (" + category + ")");
+            pstmt.setString(3, description);
             pstmt.setString(4, date);
             pstmt.executeUpdate();
             System.out.println("Expense added successfully");
@@ -60,82 +60,7 @@ public class DatabaseHelper {
                 );
             }
         } catch (SQLException e) {
-            System.out.println("Error viewing expenses: " + e.getMessage());
+            System.out.println("❌ Error viewing expenses: " + e.getMessage());
         }
     }
-
-    // create users table if not exists
-    public static void createUsersTable() {
-        String sql = "CREATE TABLE IF NOT EXISTS users (" +
-                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "username TEXT UNIQUE," +
-                "password TEXT)";
-        try (Connection conn = connect();
-             Statement stmt = conn.createStatement()) {
-            stmt.execute(sql);
-            System.out.println("Users table ready");
-        } catch (SQLException e) {
-            System.out.println("Error creating users table: " + e.getMessage());
-        }
-    }
-
-    // add default users for testing
-    public static void addDefaultUsers() {
-        String sql = "INSERT OR IGNORE INTO users(username, password) VALUES(?, ?)";
-
-        String[][] defaultUsers = {
-                {"admin", "1234"},
-                {"john", "abraham"},
-                {"sarah", "sarah123"},
-                {"mike", "mike"}
-        };
-
-        try (Connection conn = connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            for (String[] userInfo : defaultUsers) {
-                pstmt.setString(1, userInfo[0]); // username
-                pstmt.setString(2, userInfo[1]); // password
-                pstmt.executeUpdate();
-                System.out.println("User added: " + userInfo[0]);
-            }
-
-        } catch (SQLException e) {
-            System.out.println("Error adding default users: " + e.getMessage());
-        }
-    }
-
-    // check if login details are correct
-    public static boolean checkLogin(String username, String password) {
-        String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
-        try (Connection conn = connect();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, username);
-            pstmt.setString(2, password);
-            ResultSet rs = pstmt.executeQuery();
-            return rs.next(); // true if found
-        } catch (SQLException e) {
-            System.out.println("Error checking login: " + e.getMessage());
-            return false;
-        }
-    }
-
-    // view all users (for debugging)
-    public static void viewAllUsers() {
-        String sql = "SELECT * FROM users";
-        try (Connection conn = connect();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            System.out.println("=== All Users in Database ===");
-            while (rs.next()) {
-                System.out.println("ID: " + rs.getInt("id") +
-                        " | Username: " + rs.getString("username") +
-                        " | Password: " + rs.getString("password"));
-            }
-            System.out.println("=============================");
-        } catch (SQLException e) {
-            System.out.println("Error viewing users: " + e.getMessage());
-        }
-    }
-
 }
