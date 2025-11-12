@@ -39,6 +39,14 @@ public class ExpenseTrackerUI {
         // Add button
         Button addButton = new Button("Add Expense");
 
+        Button exportButton = new Button("Export to Excel (CSV)");
+        exportButton.setOnAction(e -> {
+            ExportToCSV.exportExpenses(expenses);
+            new Alert(Alert.AlertType.INFORMATION, "Exported successfully to expenses.csv!").showAndWait();
+        });
+
+
+
         // Initialize TableView
         tableView = new TableView<>();
         expenses = FXCollections.observableArrayList();
@@ -72,15 +80,13 @@ public class ExpenseTrackerUI {
         addButton.setOnAction(e -> {
             String category = categoryDropdown.getValue();
             if (category == null || category.isEmpty()) {
-                Alert alert = new Alert(Alert.AlertType.WARNING, "Please select a category!");
-                alert.showAndWait();
+                new Alert(Alert.AlertType.WARNING, "Please select a category!").showAndWait();
                 return;
             }
 
             String description = descriptionField.getText();
             if (description == null || description.trim().isEmpty()) {
-                Alert alert = new Alert(Alert.AlertType.WARNING, "Please enter a description!");
-                alert.showAndWait();
+                new Alert(Alert.AlertType.WARNING, "Please enter a description!").showAndWait();
                 return;
             }
 
@@ -88,30 +94,33 @@ public class ExpenseTrackerUI {
             try {
                 amount = Double.parseDouble(amountField.getText());
             } catch (NumberFormatException ex) {
-                Alert alert = new Alert(Alert.AlertType.WARNING, "Please enter a valid amount!");
-                alert.showAndWait();
+                new Alert(Alert.AlertType.WARNING, "Please enter a valid amount!").showAndWait();
                 return;
             }
 
-            String date = LocalDate.now().toString();
+            // 👇 Properly formatted date
+            String date = java.time.LocalDate.now()
+                    .format(java.time.format.DateTimeFormatter.ofPattern("dd-MMM-yyyy"));
 
-            // Save to database
-            DatabaseHelper.addExpense(1, amount, description, category, date);
+            // 👇 Add to database
+            DatabaseHelper.addExpense(category, amount, description, date);
 
-            // Add to TableView
+            // 👇 Add to the in-memory table
             expenses.add(new Expense(category, description, amount, date));
 
-            // Update summary
+            // 👇 Update summary + clear inputs
             updateSummary();
-
-            // Clear inputs
             categoryDropdown.setValue(null);
             descriptionField.clear();
             amountField.clear();
         });
 
+
+
+
         // Add all components to layout
-        layout.getChildren().addAll(title, categoryDropdown, descriptionField, amountField, addButton, tableView, summaryView);
+        layout.getChildren().addAll(title, categoryDropdown, descriptionField, amountField, addButton, exportButton, tableView, summaryView);
+
     }
 
     public VBox getView() {
@@ -135,4 +144,5 @@ public class ExpenseTrackerUI {
 
         summaryItems.add("Total Expenses: ₹" + overallTotal);
     }
+
 }

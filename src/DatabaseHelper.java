@@ -27,20 +27,25 @@ public class DatabaseHelper {
     }
 
     // add expense - updated parameter order to make more sense
-    public static void addExpense(int categoryId, double amount, String description, String category, String date) {
-        String sql = "INSERT INTO expenses(category_id, amount, description, date) VALUES(?, ?, ?, ?)";
+    public static void addExpense(String category, double amount, String description, String date) {
+        String sql = "INSERT INTO expenses(category, amount, description, date) VALUES(?, ?, ?, ?)";
         try (Connection conn = connect();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setInt(1, categoryId);
+
+            pstmt.setString(1, category);
             pstmt.setDouble(2, amount);
-            pstmt.setString(3, description + " (" + category + ")"); // Combining description and category
+            pstmt.setString(3, description);
             pstmt.setString(4, date);
             pstmt.executeUpdate();
-            System.out.println("Expense added successfully");
+
+            System.out.println("✅ Expense added successfully: " + category + ", " + amount + ", " + date);
         } catch (SQLException e) {
-            System.out.println("Error adding expense: " + e.getMessage());
+            System.out.println("❌ Error adding expense: " + e.getMessage());
         }
     }
+
+
+
 
     // view all expenses
     public static void viewExpenses() {
@@ -78,6 +83,39 @@ public class DatabaseHelper {
             System.out.println("Error creating users table: " + e.getMessage());
         }
     }
+
+
+
+    // TEMPORARY — only run once to reset table
+    public static void dropOldExpensesTable() {
+        String sql = "DROP TABLE IF EXISTS expenses";
+        try (Connection conn = connect();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("🧹 Old expenses table dropped!");
+        } catch (SQLException e) {
+            System.out.println("❌ Error dropping table: " + e.getMessage());
+        }
+    }
+
+    public static void createExpensesTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS expenses (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "category TEXT, " +
+                "description TEXT, " +
+                "amount REAL, " +
+                "date TEXT" +
+                ");";
+
+        try (Connection conn = connect();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
+            System.out.println("✅ Expenses table created or already exists.");
+        } catch (SQLException e) {
+            System.out.println("❌ Error creating expenses table: " + e.getMessage());
+        }
+    }
+
 
     // add one default user for testing
     public static void addDefaultUser() {
