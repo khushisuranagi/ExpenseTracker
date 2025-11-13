@@ -1,4 +1,6 @@
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseHelper {
     private static final String URL = "jdbc:sqlite:expenses.db";
@@ -143,4 +145,51 @@ public class DatabaseHelper {
             return false;
         }
     }
+
+    // Load all expenses from database
+    // Load all expenses from database
+    public static List<Expense> loadExpenses() {
+        List<Expense> expenseList = new ArrayList<>();
+        String sql = "SELECT id, category, description, amount, date FROM expenses ORDER BY id DESC";
+
+        try (Connection conn = connect();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String category = rs.getString("category");
+                String description = rs.getString("description");
+                double amount = rs.getDouble("amount");
+                String date = rs.getString("date");
+
+                expenseList.add(new Expense(id, category, description, amount, date));
+            }
+            System.out.println("✅ Loaded " + expenseList.size() + " expenses from database");
+        } catch (SQLException e) {
+            System.out.println("❌ Error loading expenses: " + e.getMessage());
+        }
+
+        return expenseList;
+    }
+    // Delete expense by ID
+    public static boolean deleteExpense(int id) {
+        String sql = "DELETE FROM expenses WHERE id = ?";
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            int rowsAffected = pstmt.executeUpdate();
+            if (rowsAffected > 0) {
+                System.out.println("✅ Expense deleted successfully");
+                return true;
+            } else {
+                System.out.println("❌ No expense found with that ID");
+                return false;
+            }
+        } catch (SQLException e) {
+            System.out.println("❌ Error deleting expense: " + e.getMessage());
+            return false;
+        }
+    }
+
 }

@@ -10,8 +10,10 @@
       <root url="jar://$PROJECT_DIR$/../../../../JavaFX/javafx-sdk-17.0.17/lib/javafx.swing.jar!/" />
       <root url="jar://$PROJECT_DIR$/../../../../JavaFX/javafx-sdk-17.0.17/lib/javafx.web.jar!/" />
       <root url="jar://$PROJECT_DIR$/../../../../JavaFX/javafx-sdk-17.0.17/lib/javafx-swt.jar!/" />
+      <root url="file://$PROJECT_DIR$/lib/javafx-sdk-17.0.17/lib" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
+    <jarDirectory url="file://$PROJECT_DIR$/lib/javafx-sdk-17.0.17/lib" recursive="false" />
   </library>
 </component>

@@ -1,4 +1,8 @@
-Category,Description,Amount (₹),Date
-Shopping,xs,53.0,13-Nov-2025
-Other,ghn,424.0,13-Nov-2025
-Food,tg,41.0,13-Nov-2025
+﻿ID,Category,Description,Amount,Date
+5,Shopping,clothes,4000.00,"13-Nov-2025"
+4,Food,samosa,50.00,"13-Nov-2025"
+2,Travel,car trip,39900.00,"13-Nov-2025"
+
+====,====,====,====,====
+,,,TOTAL EXPENSES:,₹43950.00
+====,====,====,====,====

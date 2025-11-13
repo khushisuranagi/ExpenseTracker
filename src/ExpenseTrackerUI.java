@@ -6,6 +6,7 @@ import javafx.scene.layout.*;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 public class ExpenseTrackerUI {
 
@@ -45,12 +46,46 @@ public class ExpenseTrackerUI {
             new Alert(Alert.AlertType.INFORMATION, "Exported successfully to expenses.csv!").showAndWait();
         });
 
+        Button deleteButton = new Button("Delete Selected");
+        deleteButton.setStyle("-fx-background-color: #ff4444; -fx-text-fill: white;");
+        deleteButton.setOnAction(e -> {
+            Expense selected = tableView.getSelectionModel().getSelectedItem();
+            if (selected == null) {
+                new Alert(Alert.AlertType.WARNING, "Please select an expense to delete!").showAndWait();
+                return;
+            }
+
+            // Confirm deletion
+            Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+            confirmAlert.setTitle("Confirm Delete");
+            confirmAlert.setHeaderText("Delete this expense?");
+            confirmAlert.setContentText(selected.getCategory() + " - ₹" + selected.getAmount());
+
+            if (confirmAlert.showAndWait().get() == ButtonType.OK) {
+                // Delete from database
+                boolean deleted = DatabaseHelper.deleteExpense(selected.getId());
+
+                if (deleted) {
+                    // Remove from table
+                    expenses.remove(selected);
+                    updateSummary();
+                    new Alert(Alert.AlertType.INFORMATION, "Expense deleted successfully!").showAndWait();
+                }
+            }
+        });
+
+
 
 
         // Initialize TableView
         tableView = new TableView<>();
         expenses = FXCollections.observableArrayList();
         tableView.setItems(expenses);
+
+
+        TableColumn<Expense, Integer> idCol = new TableColumn<>("ID");
+        idCol.setCellValueFactory(data -> data.getValue().idProperty().asObject());
+        idCol.setPrefWidth(50);
 
         TableColumn<Expense, String> categoryCol = new TableColumn<>("Category");
         categoryCol.setCellValueFactory(data -> data.getValue().categoryProperty());
@@ -68,13 +103,17 @@ public class ExpenseTrackerUI {
         dateCol.setCellValueFactory(data -> data.getValue().dateProperty());
         dateCol.setPrefWidth(100);
 
-        tableView.getColumns().addAll(categoryCol, descriptionCol, amountCol, dateCol);
+        tableView.getColumns().addAll(idCol, descriptionCol, amountCol, dateCol);
+
+
 
         // Initialize summary ListView
         summaryView = new ListView<>();
         summaryItems = FXCollections.observableArrayList();
         summaryView.setItems(summaryItems);
         summaryView.setPrefHeight(120);
+
+        loadExpensesFromDatabase();
 
         // Add button action
         addButton.setOnAction(e -> {
@@ -106,7 +145,11 @@ public class ExpenseTrackerUI {
             DatabaseHelper.addExpense(category, amount, description, date);
 
             // 👇 Add to the in-memory table
-            expenses.add(new Expense(category, description, amount, date));
+            //expenses.add(new Expense(category, description, amount, date));
+
+            expenses.clear();
+            loadExpensesFromDatabase();
+
 
             // 👇 Update summary + clear inputs
             updateSummary();
@@ -119,7 +162,7 @@ public class ExpenseTrackerUI {
 
 
         // Add all components to layout
-        layout.getChildren().addAll(title, categoryDropdown, descriptionField, amountField, addButton, exportButton, tableView, summaryView);
+        layout.getChildren().addAll(title, categoryDropdown, descriptionField, amountField, addButton, exportButton, deleteButton, tableView, summaryView);
 
     }
 
@@ -143,6 +186,14 @@ public class ExpenseTrackerUI {
         }
 
         summaryItems.add("Total Expenses: ₹" + overallTotal);
+    }
+
+    // Load expenses from database when UI starts
+    private void loadExpensesFromDatabase() {
+        List<Expense> loadedExpenses = DatabaseHelper.loadExpenses();
+        expenses.addAll(loadedExpenses);
+        updateSummary();
+        System.out.println("📊 Loaded " + loadedExpenses.size() + " expenses into UI");
     }
 
 }

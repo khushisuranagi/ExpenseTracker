@@ -8,7 +8,7 @@ public class Main extends Application {
         DatabaseHelper.createUsersTable();
         DatabaseHelper.addDefaultUser();
 
-        DatabaseHelper.dropOldExpensesTable();   // Run once to reset table
+        //DatabaseHelper.dropOldExpensesTable();   // Run once to reset table
         DatabaseHelper.createExpensesTable();    // Recreate with new structure
 
 

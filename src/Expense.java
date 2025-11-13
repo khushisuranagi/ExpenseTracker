@@ -1,12 +1,14 @@
 import javafx.beans.property.*;
 
 public class Expense {
+    private IntegerProperty id;
     private StringProperty category;
     private StringProperty description;
     private DoubleProperty amount;
     private StringProperty date;
 
-    public Expense(String category, String description, double amount, String date) {
+    public Expense( int id, String category, String description, double amount, String date) {
+        this.id = new SimpleIntegerProperty(id);
         this.category = new SimpleStringProperty(category);
         this.description = new SimpleStringProperty(description);
         this.amount = new SimpleDoubleProperty(amount);
@@ -14,12 +16,14 @@ public class Expense {
     }
 
     // TableView property getters
+    public IntegerProperty idProperty() { return id; }
     public StringProperty categoryProperty() { return category; }
     public StringProperty descriptionProperty() { return description; }
     public DoubleProperty amountProperty() { return amount; }
     public StringProperty dateProperty() { return date; }
 
     // Regular getters
+    public int getId() { return id.get(); }
     public String getCategory() { return category.get(); }
     public String getDescription() { return description.get(); }
     public double getAmount() { return amount.get(); }

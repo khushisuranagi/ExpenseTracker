@@ -8,21 +8,41 @@ public class ExportToCSV {
         String fileName = "expenses.csv";
 
         try (FileWriter writer = new FileWriter(fileName)) {
-            // 👇 Write header row
-            writer.append("Category,Description,Amount (₹),Date\n");
+            // Add BOM for proper Excel encoding
+            writer.write('\ufeff');
 
-            // 👇 Write each expense
+            // Write header row
+            writer.append("ID,Category,Description,Amount,Date\n");
+
+            // Calculate total while writing expenses
+            double total = 0.0;
+
+            // Write each expense
             for (Expense exp : expenses) {
-                writer.append(exp.getCategory() == null ? "" : exp.getCategory()).append(",");
-                writer.append(exp.getDescription() == null ? "" : exp.getDescription().replace(",", " ")).append(",");
-                writer.append(String.valueOf(exp.getAmount())).append(",");
-                writer.append(exp.getDate() == null ? "" : exp.getDate()).append("\n");
+                writer.append(String.valueOf(exp.getId())).append(",");
+                writer.append(exp.getCategory() == null ? "" : escapeCSV(exp.getCategory())).append(",");
+                writer.append(exp.getDescription() == null ? "" : escapeCSV(exp.getDescription())).append(",");
+                writer.append(String.format("%.2f", exp.getAmount())).append(","); // Format amount with 2 decimals
+
+                // Format date - wrap in quotes to preserve format
+                String date = exp.getDate() == null ? "" : exp.getDate();
+                writer.append("\"" + date + "\"").append("\n");
+
+                // Add to total
+                total += exp.getAmount();
             }
+
+            // 👇 IMPROVED: Add separator line and prominent total
+            writer.append("\n"); // Empty row
+            writer.append("====,====,====,====,====\n"); // Separator line
+            writer.append(",,,TOTAL EXPENSES:,₹" + String.format("%.2f", total) + "\n");
+            writer.append("====,====,====,====,====\n"); // Separator line
 
             writer.flush();
             System.out.println("✅ Export successful! File saved as: " + fileName);
+            System.out.println("📊 Total Expenses: ₹" + String.format("%.2f", total));
 
-            // 👇 Optional: Automatically open the file in Excel
+            // Optional: Automatically open the file in Excel
             try {
                 java.awt.Desktop.getDesktop().open(new java.io.File(fileName));
             } catch (IOException ex) {
@@ -32,5 +52,13 @@ public class ExportToCSV {
         } catch (IOException e) {
             System.out.println("❌ Error exporting data: " + e.getMessage());
         }
+    }
+
+    // Helper method to escape CSV values properly
+    private static String escapeCSV(String value) {
+        if (value.contains(",") || value.contains("\"") || value.contains("\n")) {
+            return "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+        return value;
     }
 }
