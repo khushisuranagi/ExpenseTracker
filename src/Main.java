@@ -8,6 +8,10 @@ public class Main extends Application {
         DatabaseHelper.createUsersTable();
         DatabaseHelper.addDefaultUser();
 
+        DatabaseHelper.dropOldExpensesTable();   // Run once to reset table
+        DatabaseHelper.createExpensesTable();    // Recreate with new structure
+
+
         stage.setTitle("Login - Expense Tracker");
         stage.setScene(new Scene(new LoginUI(stage).getView(), 400, 250));
         stage.show();
