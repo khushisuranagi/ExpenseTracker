@@ -8,21 +8,17 @@ public class ExportToCSV {
         String fileName = "expenses.csv";
 
         try (FileWriter writer = new FileWriter(fileName)) {
-            // Add BOM for proper Excel encoding
             writer.write('\ufeff');
 
-            // Write header row
             writer.append("ID,Category,Description,Amount,Date\n");
 
-            // Calculate total while writing expenses
             double total = 0.0;
 
-            // Write each expense
             for (Expense exp : expenses) {
                 writer.append(String.valueOf(exp.getId())).append(",");
                 writer.append(exp.getCategory() == null ? "" : escapeCSV(exp.getCategory())).append(",");
                 writer.append(exp.getDescription() == null ? "" : escapeCSV(exp.getDescription())).append(",");
-                writer.append(String.format("%.2f", exp.getAmount())).append(","); // Format amount with 2 decimals
+                writer.append(String.format("%.2f", exp.getAmount())).append(",");
 
                 // Format date - wrap in quotes to preserve format
                 String date = exp.getDate() == null ? "" : exp.getDate();
@@ -32,25 +28,24 @@ public class ExportToCSV {
                 total += exp.getAmount();
             }
 
-            // 👇 IMPROVED: Add separator line and prominent total
-            writer.append("\n"); // Empty row
+
+            writer.append("\n");
             writer.append("====,====,====,====,====\n"); // Separator line
             writer.append(",,,TOTAL EXPENSES:,₹" + String.format("%.2f", total) + "\n");
             writer.append("====,====,====,====,====\n"); // Separator line
 
             writer.flush();
-            System.out.println("✅ Export successful! File saved as: " + fileName);
-            System.out.println("📊 Total Expenses: ₹" + String.format("%.2f", total));
+            System.out.println(" Export successful! File saved as: " + fileName);
+            System.out.println(" Total Expenses: ₹" + String.format("%.2f", total));
 
-            // Optional: Automatically open the file in Excel
             try {
                 java.awt.Desktop.getDesktop().open(new java.io.File(fileName));
             } catch (IOException ex) {
-                System.out.println("⚠️ Could not open file automatically: " + ex.getMessage());
+                System.out.println(" Could not open file automatically: " + ex.getMessage());
             }
 
         } catch (IOException e) {
-            System.out.println("❌ Error exporting data: " + e.getMessage());
+            System.out.println(" Error exporting data: " + e.getMessage());
         }
     }
 

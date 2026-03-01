@@ -1,8 +1,11 @@
 ﻿ID,Category,Description,Amount,Date
+9,Shopping,mall,1000.00,"13-Nov-2025"
+8,Travel,savordem,600.00,"13-Nov-2025"
+6,Food,basils,280.00,"13-Nov-2025"
 5,Shopping,clothes,4000.00,"13-Nov-2025"
 4,Food,samosa,50.00,"13-Nov-2025"
 2,Travel,car trip,39900.00,"13-Nov-2025"
 
 ====,====,====,====,====
-,,,TOTAL EXPENSES:,₹43950.00
+,,,TOTAL EXPENSES:,₹45830.00
 ====,====,====,====,====

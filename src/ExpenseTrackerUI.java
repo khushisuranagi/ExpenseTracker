@@ -62,7 +62,6 @@ public class ExpenseTrackerUI {
             confirmAlert.setContentText(selected.getCategory() + " - ₹" + selected.getAmount());
 
             if (confirmAlert.showAndWait().get() == ButtonType.OK) {
-                // Delete from database
                 boolean deleted = DatabaseHelper.deleteExpense(selected.getId());
 
                 if (deleted) {
@@ -115,7 +114,6 @@ public class ExpenseTrackerUI {
 
         loadExpensesFromDatabase();
 
-        // Add button action
         addButton.setOnAction(e -> {
             String category = categoryDropdown.getValue();
             if (category == null || category.isEmpty()) {
@@ -137,21 +135,16 @@ public class ExpenseTrackerUI {
                 return;
             }
 
-            // 👇 Properly formatted date
             String date = java.time.LocalDate.now()
                     .format(java.time.format.DateTimeFormatter.ofPattern("dd-MMM-yyyy"));
 
-            // 👇 Add to database
             DatabaseHelper.addExpense(category, amount, description, date);
 
-            // 👇 Add to the in-memory table
-            //expenses.add(new Expense(category, description, amount, date));
 
             expenses.clear();
             loadExpensesFromDatabase();
 
 
-            // 👇 Update summary + clear inputs
             updateSummary();
             categoryDropdown.setValue(null);
             descriptionField.clear();
@@ -161,7 +154,6 @@ public class ExpenseTrackerUI {
 
 
 
-        // Add all components to layout
         layout.getChildren().addAll(title, categoryDropdown, descriptionField, amountField, addButton, exportButton, deleteButton, tableView, summaryView);
 
     }
@@ -170,7 +162,6 @@ public class ExpenseTrackerUI {
         return layout;
     }
 
-    // Update summary ListView
     private void updateSummary() {
         summaryItems.clear();
 
@@ -188,12 +179,11 @@ public class ExpenseTrackerUI {
         summaryItems.add("Total Expenses: ₹" + overallTotal);
     }
 
-    // Load expenses from database when UI starts
     private void loadExpensesFromDatabase() {
         List<Expense> loadedExpenses = DatabaseHelper.loadExpenses();
         expenses.addAll(loadedExpenses);
         updateSummary();
-        System.out.println("📊 Loaded " + loadedExpenses.size() + " expenses into UI");
+        System.out.println("Loaded " + loadedExpenses.size() + " expenses into UI");
     }
 
 }

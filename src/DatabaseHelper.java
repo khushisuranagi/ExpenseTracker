@@ -28,7 +28,7 @@ public class DatabaseHelper {
         }
     }
 
-    // add expense - updated parameter order to make more sense
+    // add expense
     public static void addExpense(String category, double amount, String description, String date) {
         String sql = "INSERT INTO expenses(category, amount, description, date) VALUES(?, ?, ?, ?)";
         try (Connection conn = connect();
@@ -40,9 +40,9 @@ public class DatabaseHelper {
             pstmt.setString(4, date);
             pstmt.executeUpdate();
 
-            System.out.println("✅ Expense added successfully: " + category + ", " + amount + ", " + date);
+            System.out.println("Expense added successfully: " + category + ", " + amount + ", " + date);
         } catch (SQLException e) {
-            System.out.println("❌ Error adding expense: " + e.getMessage());
+            System.out.println(" Error adding expense: " + e.getMessage());
         }
     }
 
@@ -67,11 +67,11 @@ public class DatabaseHelper {
                 );
             }
         } catch (SQLException e) {
-            System.out.println("❌ Error viewing expenses: " + e.getMessage());
+            System.out.println(" Error viewing expenses: " + e.getMessage());
         }
     }
 
-    // create users table if not exists
+
     public static void createUsersTable() {
         String sql = "CREATE TABLE IF NOT EXISTS users (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -87,19 +87,6 @@ public class DatabaseHelper {
     }
 
 
-
-    // TEMPORARY — only run once to reset table
-    public static void dropOldExpensesTable() {
-        String sql = "DROP TABLE IF EXISTS expenses";
-        try (Connection conn = connect();
-             Statement stmt = conn.createStatement()) {
-            stmt.execute(sql);
-            System.out.println("🧹 Old expenses table dropped!");
-        } catch (SQLException e) {
-            System.out.println("❌ Error dropping table: " + e.getMessage());
-        }
-    }
-
     public static void createExpensesTable() {
         String sql = "CREATE TABLE IF NOT EXISTS expenses (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -112,14 +99,14 @@ public class DatabaseHelper {
         try (Connection conn = connect();
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
-            System.out.println("✅ Expenses table created or already exists.");
+            System.out.println("Expenses table created or already exists.");
         } catch (SQLException e) {
-            System.out.println("❌ Error creating expenses table: " + e.getMessage());
+            System.out.println(" Error creating expenses table: " + e.getMessage());
         }
     }
 
 
-    // add one default user for testing
+
     public static void addDefaultUser() {
         String sql = "INSERT OR IGNORE INTO users(username, password) VALUES('admin', '1234')";
         try (Connection conn = connect();
@@ -146,8 +133,7 @@ public class DatabaseHelper {
         }
     }
 
-    // Load all expenses from database
-    // Load all expenses from database
+
     public static List<Expense> loadExpenses() {
         List<Expense> expenseList = new ArrayList<>();
         String sql = "SELECT id, category, description, amount, date FROM expenses ORDER BY id DESC";
@@ -165,14 +151,13 @@ public class DatabaseHelper {
 
                 expenseList.add(new Expense(id, category, description, amount, date));
             }
-            System.out.println("✅ Loaded " + expenseList.size() + " expenses from database");
+            System.out.println(" Loaded " + expenseList.size() + " expenses from database");
         } catch (SQLException e) {
-            System.out.println("❌ Error loading expenses: " + e.getMessage());
+            System.out.println("Error loading expenses: " + e.getMessage());
         }
 
         return expenseList;
     }
-    // Delete expense by ID
     public static boolean deleteExpense(int id) {
         String sql = "DELETE FROM expenses WHERE id = ?";
         try (Connection conn = connect();
@@ -180,14 +165,14 @@ public class DatabaseHelper {
             pstmt.setInt(1, id);
             int rowsAffected = pstmt.executeUpdate();
             if (rowsAffected > 0) {
-                System.out.println("✅ Expense deleted successfully");
+                System.out.println("Expense deleted successfully");
                 return true;
             } else {
-                System.out.println("❌ No expense found with that ID");
+                System.out.println(" No expense found with that ID");
                 return false;
             }
         } catch (SQLException e) {
-            System.out.println("❌ Error deleting expense: " + e.getMessage());
+            System.out.println(" Error deleting expense: " + e.getMessage());
             return false;
         }
     }
